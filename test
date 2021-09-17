@@ -5,10 +5,13 @@ import sys
 import os
 
 import torchvision.transforms as transforms
+from torchvision.transforms import InterpolationMode
 from torchvision.utils import save_image
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
 import torch
+from PIL import Image
+Image.MAX_IMAGE_PIXELS = None
 
 from models import Generator
 from datasets import ImageDataset
@@ -52,7 +55,8 @@ input_A = Tensor(opt.batchSize, opt.input_nc, opt.size, opt.size)
 input_B = Tensor(opt.batchSize, opt.output_nc, opt.size, opt.size)
 
 # Dataset loader
-transforms_ = [ transforms.ToTensor(),
+transforms_ = [ transforms.Resize((opt.size, opt.size), InterpolationMode.BICUBIC),
+                transforms.ToTensor(),
                 transforms.Normalize((0.5,0.5,0.5), (0.5,0.5,0.5)) ]
 dataloader = DataLoader(ImageDataset(opt.dataroot, transforms_=transforms_, mode='test'), 
                         batch_size=opt.batchSize, shuffle=False, num_workers=opt.n_cpu)
